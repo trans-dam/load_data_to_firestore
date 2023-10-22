@@ -36,7 +36,7 @@ Chaque équipe contient des informations telles que le titre, une image, la date
 
 ## Collection "transactions"
 
-Les transactions liées aux équipes sont également incluses dans le projet. Voici un exemple de données fictives pour la collection "transactions" :
+Les transactions liées aux groupes sont également incluses dans le projet. Voici un exemple de données fictives pour la collection "transactions" :
 
 ```dart
 import 'package:dto/transaction.dart';

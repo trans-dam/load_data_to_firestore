@@ -8,6 +8,8 @@ import 'package:load_data_to_firestore/users.dart';
 String pi = PI;
 String apiKey = API_KEY;
 
+List<String> teamsId = [];
+
 void main(List<String> arguments) async {
   Firestore.initialize(pi);
   late TokenStore tokenStore;
@@ -15,14 +17,29 @@ void main(List<String> arguments) async {
   tokenStore = VolatileStore();
   FirebaseAuth(apiKey, tokenStore);
   FirebaseAuth.initialize(apiKey, tokenStore);
-  await addUsers();
-
   await addTeams();
+  await addUsers().then((value) {
+    for (User user in users) {
+      final List<String> currentTeamsId = [];
+      for (int i = 0; i < teams.length; i++) {
+        if (teams[i].owner == user.email ||
+            teams[i].users.contains(user.email)) {
+          currentTeamsId.add(teamsId[i]);
+        }
+      }
+      Firestore.instance.collection('users').document(user.email).update(
+          {'teams': currentTeamsId.map((teamId) => 'teams/$teamId').toList()});
+    }
+  });
+
+  return null;
 }
 
 Future<void> addTeams() async {
   for (Team team in teams) {
-    Firestore.instance.collection('teams').add(team.toJson());
+    Firestore.instance.collection('teams').add(team.toJson()).then((team) {
+      teamsId.add(team.id);
+    });
   }
 }
 
